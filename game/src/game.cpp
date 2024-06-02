@@ -1,4 +1,41 @@
 #include <raylib.h>
+#include <vector>
+
+int rangeRandomAlg2 (int min, int max){
+    int n = max - min + 1;
+    int remainder = RAND_MAX % n;
+    int x;
+    do{
+        x = rand();
+    }while (x >= RAND_MAX - remainder);
+    return min + x % n;
+}
+
+class CCoin
+{
+public:
+    CCoin() : position{0, 0} {}
+    void Draw()
+    {
+        DrawCircle(position.x, position.y, 20, BLUE);
+    }
+
+    bool &IsPickup()
+    {
+        return disabled;
+    }
+
+    Vector2 &Position()
+    {
+        return position;
+    }
+
+public:
+    int value = 1; // a coin = 1 score
+    bool disabled = false;
+
+    Vector2 position; // position
+};
 
 // the player lmao
 class CPlayer
@@ -19,6 +56,7 @@ public:
 
     Vector2 &Velocity() { return this->velocity; }
     Vector2 &Position() { return this->position; }
+    int &Score() { return this->score; }
 
 private:
     int score;        // amount of collected coins
@@ -27,13 +65,21 @@ private:
     Vector2 velocity; // player speed
 };
 
+
 /*Write the fucking game here  ez*/
 class CGame
 {
 public:
+    CGame() : v2ScreenSize({800,600}) {}
     void Init()
     {
         cplayer = new CPlayer();
+        for (int i=0; i<15; i++)
+        {
+            CCoin coin;
+            coin.Position() = {(float)rangeRandomAlg2(20, 700), (float)rangeRandomAlg2(20, 600)};
+            vCoins.push_back(coin);
+        }
     }
     void ProcessKeys()
     {
@@ -61,25 +107,47 @@ public:
 
         if (IsKeyPressed(KEY_R))
         {
-            cplayer->Velocity() = {0,0};
-            cplayer->Position() = {100,100};
+            cplayer->Velocity() = {0, 0};
+            cplayer->Position() = {100, 100};
         }
+    }
+
+    void ProcessCollision()
+    {
+
     }
 
     void Update()
     {
         ProcessKeys();
         cplayer->Update();
+        for (auto& coin  : vCoins)
+        {
+            if (!coin.IsPickup())
+            {
+                if (CheckCollisionCircleRec(coin.Position(), 20, {cplayer->Position().x, cplayer->Position().y, 50, 100}))
+                {
+                    cplayer->Score()++;
+                    coin.IsPickup() = true;
+                }
+            }
+        }
     }
 
     void Render()
     {
         cplayer->Draw();
+        for (auto& coin : vCoins)
+        {
+            if (!coin.IsPickup())
+                coin.Draw();
+        }
+        DrawText(TextFormat("Score %d", cplayer->Score()), 500, 30, 30, RED);
     }
 
     void Run()
     {
-        InitWindow(800, 600, "The Game");
+        InitWindow(v2ScreenSize.x, v2ScreenSize.y, "The Game");
         SetTargetFPS(60);
 
         this->Init();
@@ -102,6 +170,8 @@ public:
 
 private:
     CPlayer *cplayer;
+    std::vector<CCoin> vCoins;
+    Vector2 v2ScreenSize;
 };
 
 int main()
