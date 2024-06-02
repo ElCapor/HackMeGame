@@ -4,7 +4,7 @@
 class CPlayer
 {
 public:
-    CPlayer() :score(0), position({100,100}), size({50,100}), velocity({0,0}) {}
+    CPlayer() : score(0), position({100, 100}), size({50, 100}), velocity({0, 0}) {}
 
     void Draw()
     {
@@ -17,19 +17,20 @@ public:
         position.y += velocity.y;
     }
 
-    Vector2& Velocity() { return this->velocity;}
+    Vector2 &Velocity() { return this->velocity; }
+    Vector2 &Position() { return this->position; }
 
 private:
-    int score; // amount of collected coins
+    int score;        // amount of collected coins
     Vector2 position; // position on screen
-    Vector2 size; // player size
+    Vector2 size;     // player size
     Vector2 velocity; // player speed
 };
 
 /*Write the fucking game here  ez*/
 class CGame
 {
-    public:
+public:
     void Init()
     {
         cplayer = new CPlayer();
@@ -40,17 +41,28 @@ class CGame
         if (IsKeyDown(KEY_D))
         {
             cplayer->Velocity().x += 100 * GetFrameTime();
-        } else if (IsKeyDown(KEY_A))
+        }
+        else if (IsKeyDown(KEY_A))
         {
             cplayer->Velocity().x -= 100 * GetFrameTime();
-        } else if (IsKeyDown(KEY_W))
+        }
+        else if (IsKeyDown(KEY_W))
         {
             cplayer->Velocity().y -= 100 * GetFrameTime();
-        } else if (IsKeyDown(KEY_S))
+        }
+        else if (IsKeyDown(KEY_S))
         {
             cplayer->Velocity().y += 100 * GetFrameTime();
-        } else {
+        }
+        else
+        {
+            cplayer->Velocity() = {0, 0};
+        }
+
+        if (IsKeyPressed(KEY_R))
+        {
             cplayer->Velocity() = {0,0};
+            cplayer->Position() = {100,100};
         }
     }
 
@@ -86,15 +98,15 @@ class CGame
 
     void Shutdown()
     {
-
     }
+
 private:
-    CPlayer* cplayer;
+    CPlayer *cplayer;
 };
 
 int main()
 {
-    CGame* game = new CGame();
+    CGame *game = new CGame();
     game->Run();
     return 0;
 }
