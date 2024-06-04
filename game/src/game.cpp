@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <vector>
+#include <anticheat/CAnticheat.hpp>
 
 int rangeRandomAlg2 (int min, int max){
     int n = max - min + 1;
@@ -80,6 +81,7 @@ public:
             coin.Position() = {(float)rangeRandomAlg2(20, 700), (float)rangeRandomAlg2(20, 600)};
             vCoins.push_back(coin);
         }
+        CAnti::StartAntiCheat();
     }
     void ProcessKeys()
     {

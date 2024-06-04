@@ -8,6 +8,6 @@ target("game")
     set_languages("cxx23")
     add_files("src/**.cpp") -- search for all cpp files in subdirectories recursively
     add_includedirs("include") -- include is a include directory too cuz why not
-
+    add_defines("WINDOWS_IGNORE_PACKING_MISMATCH")
     add_packages("raylib")
 
