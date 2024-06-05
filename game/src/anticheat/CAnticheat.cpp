@@ -50,6 +50,7 @@ void printGrantedAccess(uint32_t ulGrantedAccess) {
 void CAnti::StartAntiCheat()
 {
     auto NtQuerySystemInformation = ntdll::GetFunction<NTSTATUS, ULONG, PVOID, ULONG, PULONG>("NtQuerySystemInformation");
+    auto NtDuplicateObject = ntdll::GetFunction<NTSTATUS,HANDLE, HANDLE, HANDLE, PHANDLE, ULONG, ULONG, ULONG>("NtDuplicateObject");
     NTSTATUS status;
     structs::PSYSTEM_HANDLE_INFORMATION handleInfo;
     ULONG handleInfoSize = 0x10000;
@@ -78,7 +79,8 @@ void CAnti::StartAntiCheat()
         if (handle.usUniqueProcessId != pid)
             continue;
         real_number++;
-        printGrantedAccess(handle.ulGrantedAcess);
+        //printGrantedAccess(handle.ulGrantedAcess);
+        NtDuplicateObject(GetModuleHandle(0), (HANDLE)handle.usHandleValue, 0, 0, 0, 0,1);
     }
     printf("Process handle count, %d\n", real_number);
     return;

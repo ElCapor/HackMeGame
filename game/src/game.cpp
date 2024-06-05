@@ -1,6 +1,8 @@
 #include <raylib.h>
 #include <vector>
 #include <anticheat/CAnticheat.hpp>
+#include <rlImGui.h>
+#include <imgui.h>
 
 int rangeRandomAlg2 (int min, int max){
     int n = max - min + 1;
@@ -11,7 +13,6 @@ int rangeRandomAlg2 (int min, int max){
     }while (x >= RAND_MAX - remainder);
     return min + x % n;
 }
-
 class CCoin
 {
 public:
@@ -147,13 +148,29 @@ public:
         DrawText(TextFormat("Score %d", cplayer->Score()), 500, 30, 30, RED);
     }
 
+    void DrawUI()
+    {
+        if (ImGui::Begin("AntiCheat Debug Menu"))
+        {
+            if (ImGui::BeginTabBar("Menu"))
+            {
+                if (ImGui::BeginTabItem("Handles"))
+                {
+                    ImGui::EndTabItem();
+                }
+                ImGui::EndTabBar();
+            }
+            ImGui::End();
+        }
+    }
+
     void Run()
     {
         InitWindow(v2ScreenSize.x, v2ScreenSize.y, "The Game");
         SetTargetFPS(60);
 
         this->Init();
-
+        rlImGuiSetup(true);
         while (!WindowShouldClose())
         {
             this->Update();
@@ -161,7 +178,11 @@ public:
             ClearBackground(RAYWHITE);
             this->Render();
             EndDrawing();
+            rlImGuiBegin();
+            this->DrawUI();
+            rlImGuiEnd();
         }
+        rlImGuiShutdown();
         this->Shutdown();
         CloseWindow();
     }
