@@ -132,6 +132,11 @@ public:
                 {
                     cplayer->Score()++;
                     coin.IsPickup() = true;
+
+                    // respawn
+                    CCoin coin;
+                    coin.Position() = {(float)rangeRandomAlg2(20, 700), (float)rangeRandomAlg2(20, 600)};
+                    vCoins.push_back(coin);
                 }
             }
         }
