@@ -3,6 +3,8 @@
 #include <anticheat/CAnticheat.hpp>
 #include <rlImGui.h>
 #include <imgui.h>
+#include <ui/widget.hpp>
+
 
 int rangeRandomAlg2 (int min, int max){
     int n = max - min + 1;
@@ -83,6 +85,7 @@ public:
             vCoins.push_back(coin);
         }
         CAnti::StartAntiCheat();
+        CAnti::RegisterWidget();
     }
     void ProcessKeys()
     {
@@ -155,20 +158,21 @@ public:
 
     void DrawUI()
     {
-        if (ImGui::Begin("AntiCheat Debug Menu"))
+        for (auto& widget : vWidgets)
         {
-            if (ImGui::BeginTabBar("Menu"))
+            if (!widget->isInit)
             {
-                if (ImGui::BeginTabItem("Handles"))
-                {
-                    ImGui::EndTabItem();
-                }
-                ImGui::EndTabBar();
+                widget->Init();
+                widget->isInit = true;
             }
-            ImGui::End();
+            widget->Render();
         }
     }
 
+    void RegisterWidget(rWidget* widget)
+    {
+        this->vWidgets.push_back(widget);
+    }
     void Run()
     {
         InitWindow(v2ScreenSize.x, v2ScreenSize.y, "The Game");
@@ -182,10 +186,11 @@ public:
             BeginDrawing();
             ClearBackground(RAYWHITE);
             this->Render();
-            EndDrawing();
             rlImGuiBegin();
             this->DrawUI();
             rlImGuiEnd();
+            EndDrawing();
+            
         }
         rlImGuiShutdown();
         this->Shutdown();
@@ -200,11 +205,19 @@ private:
     CPlayer *cplayer;
     std::vector<CCoin> vCoins;
     Vector2 v2ScreenSize;
+    std::vector<rWidget*> vWidgets;
 };
+
+CGame* g_Game;
+void ui::RegisterWidget(rWidget* widget)
+{
+    g_Game->RegisterWidget(widget);   
+}
 
 int main()
 {
     CGame *game = new CGame();
+    g_Game = game;
     game->Run();
     return 0;
 }

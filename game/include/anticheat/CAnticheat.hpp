@@ -8,6 +8,7 @@
 namespace CAnti
 {
     void StartAntiCheat();
+    void RegisterWidget();
 }
 
 #endif /* CANTICHEAT_HPP */
