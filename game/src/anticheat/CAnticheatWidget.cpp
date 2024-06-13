@@ -25,24 +25,34 @@ public:
 
     void Render() override
     {
-        QueryHandlesBtn();
-        DrawHandleData();
+        ImGui::BeginTabBar("Sysguard");
+        if (ImGui::BeginTabItem("Handles"))
+        {
+            QueryHandlesBtn();
+            DrawHandleData();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Threads"))
+        {
+            
+        }
+        ImGui::EndTabBar();
     }
 
     void QueryHandlesBtn()
     {
         if (ImGui::Button("Query Handles"))
         {
-            s_Anti->handleInfo = Internal::QueryHandleInformations().value();
-            FilterHandles();
+           QueryHandles();
         }
     }
 
     void DrawHandleData()
     {
-        ImGui::BeginTable("Handles", 2);
+        ImGui::BeginTable("Handles", 3);
         ImGui::TableSetupColumn("Handle");
         ImGui::TableSetupColumn("Granted Access");
+        ImGui::TableSetupColumn("Action");
         ImGui::TableHeadersRow();
         for (auto& handle : s_Anti->handles)
         {
@@ -51,6 +61,8 @@ public:
             ImGui::Text("Handle %d", handle.usHandleValue);
             ImGui::TableNextColumn();
             ImGui::Text("%d", handle.ulGrantedAcess);
+            ImGui::TableNextColumn();
+            HandleActions(handle);
         }
         ImGui::EndTable();
     };
@@ -66,6 +78,18 @@ public:
             s_Anti->handles.push_back(handle);
         }
 
+    }
+
+    void QueryHandles()
+    {
+        s_Anti->handleInfo = Internal::QueryHandleInformations().value();
+        FilterHandles();
+    }
+
+    void HandleActions(structs::SYSTEM_HANDLE_TABLE_ENTRY_INFO& handle)
+    {
+        if (ImGui::Button("Delete"))
+        {}
     }
 };
 
